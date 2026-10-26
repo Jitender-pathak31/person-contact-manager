@@ -1,0 +1,135 @@
+<main class="container">
+  <header class="header">
+    <div>
+      <h1>Person Contact Manager</h1>
+      <p class="subtitle">Spring Boot REST API + Angular Standalone UI</p>
+    </div>
+  </header>
+
+  @if (errorMessage()) {
+    <div class="alert">{{ errorMessage() }}</div>
+  }
+
+  <div class="layout">
+    <!-- Left Column: Create / Edit Form -->
+    <section class="card">
+      <h2>{{ editingId !== null ? 'Edit Contact' : 'Add Contact' }}</h2>
+      <form (ngSubmit)="savePerson()" class="form">
+        <label>
+          First Name *
+          <input
+            type="text"
+            name="firstName"
+            [(ngModel)]="form.firstName"
+            placeholder="e.g. Ada"
+            required
+          />
+        </label>
+
+        <label>
+          Last Name *
+          <input
+            type="text"
+            name="lastName"
+            [(ngModel)]="form.lastName"
+            placeholder="e.g. Lovelace"
+            required
+          />
+        </label>
+
+        <label>
+          Email
+          <input
+            type="email"
+            name="email"
+            [(ngModel)]="form.email"
+            placeholder="ada@analytical.engine"
+          />
+        </label>
+
+        <label>
+          Phone
+          <input
+            type="tel"
+            name="phone"
+            [(ngModel)]="form.phone"
+            placeholder="+44 20 7946 0101"
+          />
+        </label>
+
+        <div class="form-actions">
+          <button type="submit" class="btn btn-primary">
+            {{ editingId !== null ? 'Update' : 'Create' }}
+          </button>
+          @if (editingId !== null) {
+            <button type="button" class="btn btn-secondary" (click)="resetForm()">
+              Cancel
+            </button>
+          }
+        </div>
+      </form>
+    </section>
+
+    <!-- Right Column: Search & Contact List -->
+    <section class="card">
+      <div class="list-header">
+        <h2>Contacts ({{ people().length }})</h2>
+        <div class="search-bar">
+          <input
+            type="search"
+            name="searchQuery"
+            [(ngModel)]="searchQuery"
+            (keyup.enter)="loadPeople()"
+            placeholder="Filter by last name..."
+          />
+          <button type="button" class="btn btn-secondary" (click)="loadPeople()">
+            Search
+          </button>
+        </div>
+      </div>
+
+      @if (loading()) {
+        <p class="empty">Loading contacts...</p>
+      } @else if (people().length === 0) {
+        <p class="empty">No contacts found.</p>
+      } @else {
+        <table class="table">
+          <thead>
+            <tr>
+              <th>Name</th>
+              <th>Email</th>
+              <th>Phone</th>
+              <th class="actions-col">Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (person of people(); track person.id) {
+              <tr>
+                <td class="name-cell">{{ person.firstName }} {{ person.lastName }}</td>
+                <td>{{ person.email || '—' }}</td>
+                <td>{{ person.phone || '—' }}</td>
+                <td class="actions-col">
+                  <button
+                    type="button"
+                    class="btn btn-small btn-secondary"
+                    (click)="startEdit(person)"
+                  >
+                    Edit
+                  </button>
+                  <button
+                    type="button"
+                    class="btn btn-small btn-danger"
+                    (click)="deletePerson(person.id)"
+                  >
+                    Delete
+                  </button>
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      }
+    </section>
+  </div>
+</main>
+
